@@ -30,7 +30,7 @@ export class CartService {
         const total_amt = await this.cartRepository.query("SELECT SUM (price) AS total FROM public.cart")
 
         if(total_amt[0].total>=150){
-            return total_amt[0].total-20
+            return `${total_amt[0].total-20} you got discount of 20`
         }
         else{
             return total_amt[0].total
