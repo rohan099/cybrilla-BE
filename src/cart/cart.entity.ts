@@ -1,13 +1,19 @@
-import {BaseEntity,Column,Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm"
+import {BaseEntity,Column,Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn} from "typeorm"
 import {Product} from "../products/product.entity"
 
 @Entity()
-export class cart extends BaseEntity{
-    @PrimaryGeneratedColumn()
-    id:number;
+export class Cart extends BaseEntity{
+    @PrimaryGeneratedColumn("uuid")
+    id:string;
 
-    @OneToOne(()=>Product)
+    @Column()
+    title:string;
+
+    @Column()
+    price:number;
+
+    @OneToMany(()=>Product,(product:Product)=>{product.id,product.title,product.price})
     @JoinColumn()
-    product:Product
+    public product:Product
 
 }

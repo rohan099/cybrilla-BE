@@ -1,34 +1,30 @@
 import { Body, Controller, Get, Post,Param,Delete } from '@nestjs/common';
 import {CartService} from "./cart.service"
-
+import {Cart} from "./cart.entity"
+import {CartRepository} from "./cart.repository"
+import { get } from 'http';
 @Controller('cart')
 export class CartController {
     constructor(private readonly cartService: CartService) {}
 
 
     @Post()
-    addcart(
-      @Body('title') prodTitle: string,     
-      @Body('price') prodPrice: number
-    ) {
-      const generatedId = this.cartService.addToCart(
-        prodTitle,
-        prodPrice
-      );
-      return { id: generatedId };
+    addProduct(
+        @Body('title') prodTitle: string,
+        @Body('price') prodPrice: number,
+    ):Promise <Cart> {
+    return this.cartService.createCart(prodTitle,prodPrice)
     }
 
     @Get()
     getAllProducts() {
-        return this.cartService.getProducts();
+        return this.cartService.getCarts();
     }
 
-    @Delete(':id')
-    removeProduct(@Param('id') prodId: string) {
-        this.cartService.deleteProduct(prodId);
-        return null;
+    @Get('/total')
+    getTotal(){
+        return this.cartService.getTotal();
     }
-
   
    
 }
