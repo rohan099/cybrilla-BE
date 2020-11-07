@@ -1,24 +1,42 @@
 import { Injectable } from '@nestjs/common';
-import {Cart} from "./cart.model"
+import { InjectRepository } from '@nestjs/typeorm';
+import {Cart} from "./cart.entity"
+import {CartRepository} from "./cart.repository"
 
 @Injectable()
 export class CartService {
-    private  cart: Cart[] = [];
 
-    addToCart(title: string, price: number) {
-        const  newCart= new Cart(title,price)
-        this.cart.push(newCart)
-       return newCart
+    constructor(@InjectRepository(CartRepository)
+    private cartRepository:CartRepository){}
+
+    async createCart(title: string, price: number):Promise <Cart> {
+        const cart = new Cart();
+        cart.title = title;
+        cart.price = price
+        await cart.save()
+        return cart
+      }
+    
+    getCarts() {
+        const all= this.cartRepository.find()
+        return all ;
+    }
+    async getCartById(id:number): Promise<Cart>{
+        const found = await this.cartRepository.findOne(id);
+        return found
     }
 
-    getProducts() {
-        return [...this.cart];
-    }
+    async getTotal() {
+        const total_amt = await this.cartRepository.query("SELECT SUM (price) AS total FROM public.cart")
 
-    deleteProduct(prodId: string) {
-        const index = this.deleteProduct(prodId)[1];
-        this.cart.splice(index, 1);
-    }
-
+        if(total_amt[0].total>=150){
+            return total_amt[0].total-20
+        }
+        else{
+            return total_amt[0].total
+        }
+        
+      }
+    
    
 }
